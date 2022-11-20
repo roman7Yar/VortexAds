@@ -21,5 +21,4 @@ func makeItCool(_ string: String) -> String {
     return coolString
 }
 
-makeItCool("today")
-//a - @; i - 1; s - $; o - 0; t - +
+
