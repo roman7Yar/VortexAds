@@ -21,4 +21,5 @@ func makeItCool(_ string: String) -> String {
     return coolString
 }
 
+makeItCool("Sunday")
 
