@@ -15,9 +15,10 @@
 		C321D664293F59CA00195345 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C321D662293F59CA00195345 /* LaunchScreen.storyboard */; };
 		C321D66C2944929600195345 /* PopUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C321D66B2944929600195345 /* PopUpViewController.swift */; };
 		C321D6722945EBB200195345 /* GameVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C321D6712945EBB200195345 /* GameVC.swift */; };
-		C321D6742949E2C800195345 /* DownTimerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C321D6732949E2C800195345 /* DownTimerVC.swift */; };
 		C321D676294A0FA600195345 /* ColorPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C321D675294A0FA600195345 /* ColorPickerVC.swift */; };
-		C381E25E294F33DA00ED3F93 /* MyTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C381E25D294F33DA00ED3F93 /* MyTimer.swift */; };
+		C32A9570295B5D5F0000B78B /* VolumeImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32A956F295B5D5F0000B78B /* VolumeImageView.swift */; };
+		C32A9572295C5F290000B78B /* MusicManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C32A9571295C5F290000B78B /* MusicManager.swift */; };
+		C381E25E294F33DA00ED3F93 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C381E25D294F33DA00ED3F93 /* UserDefaultsManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,9 +32,10 @@
 		C321D665293F59CA00195345 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C321D66B2944929600195345 /* PopUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpViewController.swift; sourceTree = "<group>"; };
 		C321D6712945EBB200195345 /* GameVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameVC.swift; sourceTree = "<group>"; };
-		C321D6732949E2C800195345 /* DownTimerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownTimerVC.swift; sourceTree = "<group>"; };
 		C321D675294A0FA600195345 /* ColorPickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerVC.swift; sourceTree = "<group>"; };
-		C381E25D294F33DA00ED3F93 /* MyTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTimer.swift; sourceTree = "<group>"; };
+		C32A956F295B5D5F0000B78B /* VolumeImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeImageView.swift; sourceTree = "<group>"; };
+		C32A9571295C5F290000B78B /* MusicManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicManager.swift; sourceTree = "<group>"; };
+		C381E25D294F33DA00ED3F93 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,11 +71,12 @@
 				C321D657293F59C400195345 /* AppDelegate.swift */,
 				C321D659293F59C400195345 /* SceneDelegate.swift */,
 				C321D65B293F59C400195345 /* ViewController.swift */,
+				C32A956F295B5D5F0000B78B /* VolumeImageView.swift */,
 				C321D675294A0FA600195345 /* ColorPickerVC.swift */,
-				C321D6732949E2C800195345 /* DownTimerVC.swift */,
 				C321D6712945EBB200195345 /* GameVC.swift */,
 				C321D66B2944929600195345 /* PopUpViewController.swift */,
-				C381E25D294F33DA00ED3F93 /* MyTimer.swift */,
+				C381E25D294F33DA00ED3F93 /* UserDefaultsManager.swift */,
+				C32A9571295C5F290000B78B /* MusicManager.swift */,
 				C321D65D293F59C400195345 /* Main.storyboard */,
 				C321D660293F59CA00195345 /* Assets.xcassets */,
 				C321D662293F59CA00195345 /* LaunchScreen.storyboard */,
@@ -155,11 +158,12 @@
 			files = (
 				C321D676294A0FA600195345 /* ColorPickerVC.swift in Sources */,
 				C321D65C293F59C400195345 /* ViewController.swift in Sources */,
+				C32A9572295C5F290000B78B /* MusicManager.swift in Sources */,
+				C32A9570295B5D5F0000B78B /* VolumeImageView.swift in Sources */,
 				C321D658293F59C400195345 /* AppDelegate.swift in Sources */,
-				C321D6742949E2C800195345 /* DownTimerVC.swift in Sources */,
 				C321D65A293F59C400195345 /* SceneDelegate.swift in Sources */,
 				C321D6722945EBB200195345 /* GameVC.swift in Sources */,
-				C381E25E294F33DA00ED3F93 /* MyTimer.swift in Sources */,
+				C381E25E294F33DA00ED3F93 /* UserDefaultsManager.swift in Sources */,
 				C321D66C2944929600195345 /* PopUpViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

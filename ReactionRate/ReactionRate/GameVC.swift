@@ -7,10 +7,13 @@
 
 import UIKit
 
+
 class GameVC: UIViewController, AlertViewControllerDelegate {
         
     var backgroundColor = UIColor()
     let yellowViewSize = 50.0
+    
+    var volumeImageView = VolumeImageView()
     
     var yellowView: UIView = {
         let yellowView = UIView()
@@ -40,16 +43,18 @@ class GameVC: UIViewController, AlertViewControllerDelegate {
     }()
     
     var circlesCount = 0
-    let myTimer = MyTimer()
-    var timer = Timer()
-    let goal = 3
+    let goal = 10
     var gameStartedTime = TimeInterval()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        createBackButton()
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) {_ in
+            
+        }
         
+        createBackButton()
+                
         view.backgroundColor = backgroundColor
         
         
@@ -57,31 +62,57 @@ class GameVC: UIViewController, AlertViewControllerDelegate {
         stackView.axis = NSLayoutConstraint.Axis.horizontal
         stackView.distribution = UIStackView.Distribution.equalSpacing
         stackView.alignment = UIStackView.Alignment.leading
-        stackView.spacing = 0
+        stackView.spacing = 5
         
         stackView.addArrangedSubview(timerLabel)
         stackView.addArrangedSubview(countLabel)
+        stackView.addArrangedSubview(volumeImageView.volumeImage)
         
         self.view.addSubview(stackView)
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        stackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 56).isActive = true
+        stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         
         
         view.addSubview(yellowView)
-        
-        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+                
+        countDownTimer()
 
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            self.gameStartedTime = Date().timeIntervalSinceReferenceDate
+            self.updateTimerLabel()
+        }
+    
+        NotificationCenter.default.addObserver(self, selector: #selector(changeVol), name: Notification.Name("changeVolume"), object: nil)
         
-        gameStartedTime = Date().timeIntervalSinceReferenceDate
-        myTimer.start()
-        
+    }
+   
+    @objc func changeVol(_ notification: NSNotification) {
+        guard let name = notification.object as? Bool else {
+            print("not Bool")
+            return
+        }
+        volumeImageView.volumeImage.image = name ? volumeImageView.volumeOn : volumeImageView.volumeOff
+    }
+
+    
+    func updateTimerLabel() {
+        var count = 0.0
+        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { (Timer) in
+            self.timerLabel.text = "\(String(format: "%.1f",(count)))s"
+            count += 0.1
+            if self.circlesCount == self.goal {
+                count = 0
+                Timer.invalidate()
+            }
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         let touch = touches.first!.location(in: self.view)
+        
         
         if yellowView.frame.contains(touch) {
             
@@ -106,12 +137,20 @@ class GameVC: UIViewController, AlertViewControllerDelegate {
     
     
     func showResult() {
-        
-        myTimer.stop()
-        
+                
         let gameEndedTime = Date().timeIntervalSinceReferenceDate
         let time = gameEndedTime - gameStartedTime
-        var result = "\(String(format: "%.1f",(time))) seconds \n"
+      
+        var result = "\n\nYour result: \(String(format: "%.1f",(time))) seconds\n"
+        
+        let bestResult = UserDefaultsManager.shared.getScore()
+        if bestResult == 0 {
+            UserDefaultsManager.shared.setScore(value: time)
+        } else if bestResult > time {
+            UserDefaultsManager.shared.setScore(value: time)
+        }
+        
+        result += "\nBest result: \(String(format: "%.1f",(bestResult))) seconds"
         
         let vc = PopUpViewController()
         vc.modalPresentationStyle = .overFullScreen
@@ -121,14 +160,17 @@ class GameVC: UIViewController, AlertViewControllerDelegate {
         
         switch time {
         case ..<6:
+            MusicManager.shared.playSound(with: Sound.forGood.id)
             vc.popUpView.backgroundColor = .green
-            result += "YOU ARE FAST 🙂"
+            result = "YOU ARE FAST 🙂" + result
         case 6...15:
+            MusicManager.shared.playSound(with: Sound.forNorm.id)
             vc.popUpView.backgroundColor = .yellow
-            result += "YOU ARE JUST FINE"
+            result = "YOU ARE JUST FINE" + result
         default:
+            MusicManager.shared.playSound(with: Sound.forBad.id)
             vc.popUpView.backgroundColor = .red
-            result += "YOU ARE SO SLOW 😦"
+            result = "YOU ARE SO SLOW 😦" + result
         }
         
         vc.delegate = self
@@ -137,12 +179,16 @@ class GameVC: UIViewController, AlertViewControllerDelegate {
     }
     
     func resetGame() {
+        MusicManager.shared.playSound(with: Sound.toStart.id)
         
-        myTimer.count = 0
+        countDownTimer()
         circlesCount = 0
-        myTimer.start()
         countLabel.text = "Count: \(self.circlesCount)"
-        
+        timerLabel.text = "0.0s"
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            self.updateTimerLabel()
+            self.gameStartedTime = Date().timeIntervalSinceReferenceDate
+        }
     }
     
     func createBackButton() {
@@ -153,23 +199,29 @@ class GameVC: UIViewController, AlertViewControllerDelegate {
         button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(backButtonAction), for: .touchUpInside)
         
-        self.view.addSubview(button)
+        view.addSubview(button)
+        
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        button.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+
     }
     
     @objc func backButtonAction(sender: UIButton!) {
-//        self.dismiss(animated: true, completion: nil)
-        presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
-        myTimer.stop()
-        timer.invalidate()
+        self.dismiss(animated: true, completion: nil)
+        MusicManager.shared.playSound(with: Sound.toDissmiss.id)
+//        presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
     func moveYellowView() {
+        
+        MusicManager.shared.playSound(with: Sound.toMoveView.id)
         
         let minX = view.safeAreaLayoutGuide.layoutFrame.minX
         let minY = view.safeAreaLayoutGuide.layoutFrame.minY
 
         let maxX = view.safeAreaLayoutGuide.layoutFrame.maxX - yellowViewSize
-        let maxY = view.safeAreaLayoutGuide.layoutFrame.maxY - yellowViewSize
+        let maxY = view.safeAreaLayoutGuide.layoutFrame.maxY - (yellowViewSize + 20)
 
         let randomX = CGFloat.random(in: minX...maxX)
         let randomY = CGFloat.random(in: minY...maxY)
@@ -179,10 +231,36 @@ class GameVC: UIViewController, AlertViewControllerDelegate {
         
     }
     
-    @objc func updateTimer() {
-        timerLabel.text = "\(String(format: "%.1f",(myTimer.count)))s"
-    }
+    func countDownTimer() {
+        
+        var count = 3
+       
+        let blackView = UIView()
+        blackView.frame = self.view.frame
+        blackView.backgroundColor = self.backgroundColor
+        view.addSubview(blackView)
+        
+        let label = UILabel()
+        label.frame.size = CGSize(width: 100, height: 100)
+        label.center = blackView.center
+        label.font = .systemFont(ofSize: 70)
+        label.text = "3"
+        label.textAlignment = .center
+        label.textColor = .white
+        blackView.addSubview(label)
+        
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { (Timer) in
+            count -= 1
+            label.text = "\(count)"
+            
+            if count == 0 {
+                Timer.invalidate()
+                blackView.removeFromSuperview()
+            }
+        }
 
+        
+    }
 
     deinit {
         print("game deinited")

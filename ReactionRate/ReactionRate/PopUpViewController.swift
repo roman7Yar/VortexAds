@@ -9,7 +9,6 @@ import UIKit
 
 protocol AlertViewControllerDelegate: AnyObject {
     func resetGame()
-    var gameStartedTime: TimeInterval { get set }
     
 }
 
@@ -22,6 +21,7 @@ class PopUpViewController: UIViewController {
         let titleLabel = UILabel()
         titleLabel.frame.size = CGSize(width: 100, height: 20)
         titleLabel.text = "Game Over"
+        titleLabel.textColor = .black
         titleLabel.font = .systemFont(ofSize: 30)
 
         return titleLabel
@@ -31,6 +31,7 @@ class PopUpViewController: UIViewController {
         let messageLabel = UILabel()
         messageLabel.frame.size = CGSize(width: 300, height: 40)
         messageLabel.text = "Message"
+        messageLabel.textColor = .black
         messageLabel.textAlignment = .center
         messageLabel.numberOfLines = 0
         messageLabel.font = .systemFont(ofSize: 25)
@@ -99,7 +100,6 @@ class PopUpViewController: UIViewController {
     }
     @objc func buttonAction() {
         delegate?.resetGame()
-        delegate?.gameStartedTime = Date().timeIntervalSinceReferenceDate
         self.dismiss(animated: false)
     }
  

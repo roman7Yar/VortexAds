@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -35,16 +36,16 @@
                                 <rect key="frame" x="133" y="143" width="126.33333333333334" height="137"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="42" translatesAutoresizingMaskIntoConstraints="NO" id="Gdv-Om-a3S">
-                                        <rect key="frame" x="16" y="16" width="94.333333333333329" height="105"/>
+                                        <rect key="frame" x="16" y="16" width="1672.3333333333333" height="105"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Message" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D6q-fO-Enr">
-                                                <rect key="frame" x="0.0" y="0.0" width="94.333333333333329" height="28.666666666666668"/>
+                                                <rect key="frame" x="789" y="0.0" width="94.333333333333371" height="28.666666666666668"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bGf-dZ-Fo2">
-                                                <rect key="frame" x="9.6666666666666572" y="70.666666666666657" width="75" height="34.333333333333343"/>
+                                                <rect key="frame" x="798.66666666666663" y="70.666666666666629" width="75" height="34.333333333333343"/>
                                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" title="Button"/>
@@ -63,9 +64,21 @@
                                     <constraint firstItem="Gdv-Om-a3S" firstAttribute="leading" secondItem="roW-F1-KIv" secondAttribute="leading" constant="16" id="gUV-m4-pQk"/>
                                 </constraints>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" showsTouchWhenHighlighted="YES" lineBreakMode="headTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wgy-Oh-6XH">
+                                <rect key="frame" x="159" y="454" width="75" height="35"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <size key="titleShadowOffset" width="2" height="5"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Button">
+                                    <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </buttonConfiguration>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Oq2-PA-Zvn"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.48009849699917218" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="roW-F1-KIv" firstAttribute="width" secondItem="bxd-RO-ViR" secondAttribute="height" multiplier="2:1" id="68z-fz-8th"/>
                             <constraint firstItem="roW-F1-KIv" firstAttribute="width" secondItem="bxd-RO-ViR" secondAttribute="width" multiplier="0.8" id="RYy-Ik-HYm"/>
@@ -82,10 +95,36 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CDp-fB-2Q5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1052.6717557251909" y="3.5211267605633805"/>
+            <point key="canvasLocation" x="1624" y="39"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="Utf-p2-0xR">
+            <objects>
+                <viewController id="bUd-8J-PI7" customClass="ViewController" customModule="ReactionRate" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="h77-c1-7bL">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="volume.slash.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="lbg-yX-0xg">
+                                <rect key="frame" x="50" y="122" width="240" height="128"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hPf-9v-zDs">
+                                <rect key="frame" x="60" y="307.66666666666663" width="240" height="128"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Ljs-t8-C9E"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DlA-GP-1cQ" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="903" y="21"/>
         </scene>
     </scenes>
     <resources>
+        <image name="volume.slash.fill" catalog="system" width="118" height="128"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
