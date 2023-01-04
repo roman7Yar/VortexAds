@@ -17,8 +17,6 @@ struct BitMasks {
     static let shield: UInt32 = 16
     static let heart: UInt32 = 32
     static let protection: UInt32 = 64
-
-
 }
 
 
@@ -30,11 +28,10 @@ class GameViewController: UIViewController {
         let scene = MyGameScene(size: self.view.frame.size)
         let skView = view as! SKView
         skView.showsFPS = false
-        skView.showsNodeCount = false
+        skView.showsNodeCount = true
         skView.showsPhysics = false
         skView.ignoresSiblingOrder = true
         scene.scaleMode = .aspectFit
-        skView.scene?.view?.frame.size.height = self.view.frame.height * 0.5
         skView.presentScene(scene)
                
     }

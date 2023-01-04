@@ -9,27 +9,14 @@ import Foundation
 import SpriteKit
 
 class MyGameScene: SKScene {
-    func resetGame() {
-        timerIsEnd = false
-        gameOverLabel.removeFromParent()
-        bestScoreLabel.removeFromParent()
-        startLabel.removeFromParent()
-        score = 0
-        heartsCount = 3
-        gameIsActive = true
-        generationSpeed = 0.8
-        label.text = "Score: \(score)"
-        createFallingItem()
-        addChild(player)
-        addChild(pause)
-    }
+    
     
     var score = 0 {
         didSet {
             label.text = "Score: \(score)"
         }
     }
-    var gameIsActive = Bool()
+    var startIsAllowed = Bool()
     var timerIsEnd = true
     
     
@@ -40,7 +27,8 @@ class MyGameScene: SKScene {
     let heartsLabel = SKLabelNode()
     
     let pause: SKSpriteNode = {
-        let pause = SKSpriteNode(imageNamed: "pause")
+        let texture = SKTexture(imageNamed: "pause")
+        let pause = SKSpriteNode(texture: texture)
         pause.size = CGSize(width: 50, height: 50)
         return pause
     }()
@@ -124,6 +112,24 @@ class MyGameScene: SKScene {
         physicsWorld.contactDelegate = self
         physicsWorld.gravity.dy = -6
         
+        removeNodes()
+        
+    }
+    
+    func removeNodes() {
+        
+        let action = SKAction.run {
+            self.children.forEach { node in
+                if node.position.y < self.frame.minY - 100 {
+                    node.removeFromParent()
+                }
+            }
+        }
+        
+        let sqns = SKAction.sequence([.wait(forDuration: 30), action])
+        
+        self.run(.repeatForever(sqns))
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -131,15 +137,19 @@ class MyGameScene: SKScene {
         let touchPoint = (touch?.location(in: self))!
         
         if pause.contains(touchPoint) {
+            
             self.isPaused.toggle()
+            
             let playOrPause = isPaused == true ? "play" : "pause"
-            pause.run(.sequence([.scale(to: 1.2, duration: 0.15),
+            
+            pause.run(.sequence([.scale(to: 1.5, duration: 0.15),
                                  .scale(to: 1, duration: 0.15)]))
+            
             self.pause.texture = SKTexture(imageNamed: playOrPause)
             
         }
         
-        if gameIsActive == false && timerIsEnd {
+        if startIsAllowed == false && timerIsEnd {
             resetGame()
         }
         
@@ -161,8 +171,23 @@ class MyGameScene: SKScene {
         
     }
     
+    let arrayOfItems: [Int] = {
+       
+        var amountOfItems = [40, 20, 4, 1, 1]
+        var arrayOfItems = [Int]()
+        var count = 0
+        
+        for i in amountOfItems {
+            for _ in 1...i {
+                arrayOfItems.append(count)
+            }
+            count += 1
+        }
+        return arrayOfItems
+    }()
+    
     func createFallingItem() {
-        let arrOfItems = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,3,4].randomElement()!
+        let randomItem = arrayOfItems.randomElement()!
         let itemNames = ["star", "dynamite", "bonus", "shield", "heart"]
         
         let sqns = SKAction.sequence([
@@ -170,14 +195,14 @@ class MyGameScene: SKScene {
             SKAction.run {
                 let fallingItem: SKSpriteNode = {
                     
-                    let high: CGFloat = arrOfItems == 0 ? 25 : 50
+                    let high: CGFloat = randomItem == 0 ? 25 : 50
                     let size = CGSize(width: high, height: high)
                     
-                    let itemTexture = SKTexture(imageNamed: itemNames[arrOfItems])
+                    let itemTexture = SKTexture(imageNamed: itemNames[randomItem])
                     let fallingItem = SKSpriteNode(texture: itemTexture, size: size)
                     
                     let bitMask = {
-                        switch arrOfItems {
+                        switch randomItem {
                         case 0: return BitMasks.star
                         case 1: return BitMasks.enemy
                         case 2: return BitMasks.bonus
@@ -191,7 +216,9 @@ class MyGameScene: SKScene {
                     fallingItem.physicsBody?.collisionBitMask = BitMasks.player
                     
                     if bitMask == BitMasks.enemy || bitMask == BitMasks.shield {
+                        
                         fallingItem.physicsBody?.collisionBitMask = BitMasks.protection
+                        
                     }
                     
                     fallingItem.physicsBody?.contactTestBitMask = BitMasks.player
@@ -206,14 +233,12 @@ class MyGameScene: SKScene {
                 self.addChild(fallingItem)
                 
                 fallingItem.run(.rotate(byAngle: 3, duration: 2))
-                
-                //                print(self.generationSpeed)
-                
+                                
                 if self.generationSpeed > 0.15 {
                     self.generationSpeed *= 0.985
                 }
                 
-                if self.gameIsActive {
+                if self.startIsAllowed {
                     self.createFallingItem()
                 }
                 
@@ -228,6 +253,7 @@ class MyGameScene: SKScene {
 }
 
 extension MyGameScene: SKPhysicsContactDelegate {
+    
     func didBegin(_ contact: SKPhysicsContact) {
         
         var body: SKPhysicsBody
@@ -244,9 +270,12 @@ extension MyGameScene: SKPhysicsContactDelegate {
         case BitMasks.bonus:
             score += 10
         case BitMasks.shield:
+            
             addChild(protection)
+            
             var count = 0.0
-            self.run(.repeat(.sequence([
+            
+            let sqns = SKAction.sequence([
                 .wait(forDuration: 0.25),
                 .run {
                     self.protection.alpha -= 1.0 / 12.0
@@ -255,8 +284,9 @@ extension MyGameScene: SKPhysicsContactDelegate {
                         self.protection.removeFromParent()
                         self.protection.alpha = 1
                     }
-                }]), count: 12))
+                }])
             
+            self.run(.repeat(sqns, count: 12))
             
         case BitMasks.heart:
             if heartsCount < 3 {
@@ -275,7 +305,7 @@ extension MyGameScene: SKPhysicsContactDelegate {
                     self.addChild(self.startLabel)
                 }
                 
-                gameIsActive = false
+                startIsAllowed = false
                 
                 let bestScore = UserDefaultsManager.shared.getScore()
                 
@@ -297,5 +327,26 @@ extension MyGameScene: SKPhysicsContactDelegate {
             
         }
         body.node?.removeFromParent()
+    }
+    
+    func resetGame() {
+        
+        timerIsEnd = false
+        
+        gameOverLabel.removeFromParent()
+        bestScoreLabel.removeFromParent()
+        startLabel.removeFromParent()
+        
+        score = 0
+        heartsCount = 3
+        
+        startIsAllowed = true
+        generationSpeed = 0.8
+        label.text = "Score: \(score)"
+        
+        createFallingItem()
+        
+        addChild(player)
+        addChild(pause)
     }
 }

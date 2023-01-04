@@ -11,16 +11,17 @@ class UserDefaultsManager {
     private init() {
         UserDefaults.standard.register(defaults: ["score" : 0])
     }
+    private let scoreKey = "score"
     
     static let shared = UserDefaultsManager()
     
     
     func getScore() -> (Int) {
-        UserDefaults.standard.integer(forKey: "score")
+        UserDefaults.standard.integer(forKey: scoreKey)
     }
     
     func setScore(value: Int) {
-        UserDefaults.standard.set(value, forKey: "score")
+        UserDefaults.standard.set(value, forKey: scoreKey)
     }
     
 
