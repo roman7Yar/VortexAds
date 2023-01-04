@@ -21,6 +21,7 @@ class MyGameScene: SKScene {
         label.text = "Score: \(score)"
         createFallingItem()
         addChild(player)
+        addChild(pause)
     }
     
     var score = 0 {
@@ -31,11 +32,18 @@ class MyGameScene: SKScene {
     var gameIsActive = Bool()
     var timerIsEnd = true
     
+    
     let label = SKLabelNode()
     let bestScoreLabel = SKLabelNode()
     let gameOverLabel = SKLabelNode(text: "Game Over")
     let startLabel = SKLabelNode(text: "Tap to restart")
     let heartsLabel = SKLabelNode()
+    
+    let pause: SKSpriteNode = {
+        let pause = SKSpriteNode(imageNamed: "pause")
+        pause.size = CGSize(width: 50, height: 50)
+        return pause
+    }()
     
     var heartsCount = 3 {
         didSet {
@@ -106,6 +114,8 @@ class MyGameScene: SKScene {
         
         player.position.x = frame.midX
         
+        pause.position = CGPoint(x: frame.maxX - 40,
+                                 y: frame.maxY - 40)
         
         addChild(label)
         addChild(startLabel)
@@ -119,6 +129,15 @@ class MyGameScene: SKScene {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = event?.allTouches?.first
         let touchPoint = (touch?.location(in: self))!
+        
+        if pause.contains(touchPoint) {
+            self.isPaused.toggle()
+            let playOrPause = isPaused == true ? "play" : "pause"
+            pause.run(.sequence([.scale(to: 1.2, duration: 0.15),
+                                 .scale(to: 1, duration: 0.15)]))
+            self.pause.texture = SKTexture(imageNamed: playOrPause)
+            
+        }
         
         if gameIsActive == false && timerIsEnd {
             resetGame()
@@ -240,7 +259,11 @@ extension MyGameScene: SKPhysicsContactDelegate {
             
             
         case BitMasks.heart:
-            if heartsCount < 3 { heartsCount += 1 }
+            if heartsCount < 3 {
+                heartsCount += 1
+            } else {
+                score += 10
+            }
             
         default:
             if heartsCount > 1 {
