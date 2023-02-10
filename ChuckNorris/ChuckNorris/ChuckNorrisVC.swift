@@ -10,9 +10,48 @@ import UIKit
 class ChuckNorrisVC: UIViewController {
     
     var url = ""
+    let edgeSpacing: CGFloat = 12
     
+    let jokeLabel: UILabel = {
+        let label = UILabel()
+       
+        label.text = "wait for download"
+        
+        label.numberOfLines = 0
+        label.textAlignment = .natural
+        label.font = .systemFont(ofSize: 28)
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
+        label.textColor = .label
+        
+        return label
+    }()
+    let dateLabel: UILabel = {
+        let label = UILabel()
+        
+        label.frame.size = CGSize(width: 100, height: 20)
+
+        label.text = "date: "
+        label.textAlignment = .left
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = .secondaryLabel
+        
+        return label
+    }()
     
-    let jokeLabel = UILabel()
+    let categoryLabel: UILabel = {
+        let label = UILabel()
+        
+        label.frame.size = CGSize(width: 100, height: 20)
+       
+        label.text = "category: none"
+        label.textAlignment = .left
+        label.font = .systemFont(ofSize: 16)
+        label.textColor = .secondaryLabel
+        
+        return label
+    }()
+    
     
     let chuckImage: UIImageView = {
         let image = UIImage(named: "chuck")
@@ -20,82 +59,116 @@ class ChuckNorrisVC: UIViewController {
         return chuckImageView
     }()
     
+    var image = UIImage(systemName: "bookmark")!
+
+    
     lazy var jokeManager = JokeManager(urlStr: url)
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style: .done, target: self, action: #selector(saveTapped))
+        view?.backgroundColor = .systemBackground
         
-        view?.backgroundColor = .white
         
-        jokeManager.delegate = self
-        jokeManager.fetchJoke()
-        
+        jokeManager.standartCallBack = { (model) -> Void in
+            self.didUpdateJoke(with: model)
+        }
+
+        jokeManager.fetch(type: .standart)
         
         view.addSubview(chuckImage)
         view.addSubview(jokeLabel)
+        view.addSubview(dateLabel)
+        view.addSubview(categoryLabel)
 
-        jokeLabel.text = "wait for download"
-        
-        jokeLabel.numberOfLines = 0
-        jokeLabel.textAlignment = .center
-        jokeLabel.font = .systemFont(ofSize: 28)
-        jokeLabel.textColor = .black
-        chuckImage.scalesLargeContentImage = true
-        
+                
         chuckImage.translatesAutoresizingMaskIntoConstraints = false
         
-        chuckImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8).isActive = true
-        chuckImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        chuckImage.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5).isActive = true
+        NSLayoutConstraint.activate([
+            chuckImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: edgeSpacing),
+            chuckImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        ])
+        
+
         jokeLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        jokeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        jokeLabel.topAnchor.constraint(equalTo: chuckImage.bottomAnchor, constant: 16).isActive = true
-        jokeLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -80).isActive = true
+        NSLayoutConstraint.activate([
+            jokeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            jokeLabel.topAnchor.constraint(equalTo: chuckImage.bottomAnchor, constant: 16),
+            jokeLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: edgeSpacing),
+            jokeLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -edgeSpacing),
+            jokeLabel.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
         
-        createBackButton()
-    }
-    
-    func createBackButton() {
-        let button = UIButton(frame: CGRect(x: 10, y: 50, width: 60, height: 35))
-        button.setTitle("Back", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.backgroundColor = .clear
-        button.layer.cornerRadius = 10
-        button.addTarget(self, action: #selector(backButtonAction), for: .touchUpInside)
+        dateLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        view.addSubview(button)
+        NSLayoutConstraint.activate([
+            dateLabel.topAnchor.constraint(equalTo: jokeLabel.bottomAnchor, constant: 16),
+            dateLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: edgeSpacing),
+            dateLabel.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -edgeSpacing)
+        ])
         
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        button.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 8).isActive = true
+        categoryLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            categoryLabel.topAnchor.constraint(equalTo: jokeLabel.bottomAnchor, constant: 16),
+            categoryLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -edgeSpacing),
+            categoryLabel.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -edgeSpacing)
+        ])
 
+
+        
+        
     }
     
-    @objc func backButtonAction(sender: UIButton!) {
-        self.dismiss(animated: true, completion: nil)
+   @objc func saveTapped() {
+        print("save tapped")
+       image = UIImage(systemName: "bookmark.fill")!
+       navigationItem.rightBarButtonItem?.image = image
     }
+    
+    func didUpdateJoke(with model: StandartJokeModel) {
+    
+        DispatchQueue.main.async {
+            self.jokeLabel.text = model.value
+            self.dateLabel.text = String(model.created_at.prefix(10))
+            self.categoryLabel.text = {
+                if model.categories.isEmpty {
+                    return "category: none"
+                } else {
+                    return "category: \(model.categories[0])"
+                }
+            }()
+            // TODO: date | categories
+        }
+    }
+
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         
-        jokeLabel.text = "wait for download"
-
-        jokeManager.fetchJoke()
+        jokeLabel.text = ""
+        jokeManager.fetch(type: .standart)
     }
     
 }
 
-extension ChuckNorrisVC: JokeManagerDelegate {
-    
-    func didUpdateJoke(with joke: String) {
-    
-        DispatchQueue.main.async {
-            self.jokeLabel.text = joke
-        }
-    }
-    
-    func didFailWithError(error: Error) {
-        print(error)
-    }
-
-}
+//extension ChuckNorrisVC: JokeManagerDelegate {
+//
+//    func didUpdateJokeWithSearch(with joke: JokeModel) {
+//        //
+//    }
+//
+//
+//    func didUpdateJoke(with joke: String) {
+//
+//        DispatchQueue.main.async {
+//            self.jokeLabel.text = joke
+//        }
+//    }
+//
+//    func didFailWithError(error: Error) {
+//        print(error)
+//    }
+//
+//}

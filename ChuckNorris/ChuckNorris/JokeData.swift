@@ -7,6 +7,3 @@
 
 import Foundation
 
-struct JokeData: Codable {
-    let value: String
-}

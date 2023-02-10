@@ -9,103 +9,51 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    
-    let stack = UIStackView()
+    private let button: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 52))
+        button.setTitle("Log in", for: .normal)
+        button.backgroundColor = .systemBackground
+        button.setTitleColor(.label, for: .normal)
+        return button
+    }() // TODO: replace with Category and Random
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        stack.axis = .vertical
-        stack.distribution  = .fillEqually
-        stack.alignment = .center
-        stack.spacing = 0
-        
-        view.addSubview(stack)
-        
-        getRequest()
-        
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        
-        stack.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        stack.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        stack.widthAnchor.constraint(equalTo: view.widthAnchor, constant: 48).isActive = true
-        stack.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.9).isActive = true
-        
+        view.backgroundColor = .systemBlue
+        view.addSubview(button)
+        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
     }
     
-    func getRequest() {
-        let categoryURL = "https://api.chucknorris.io/jokes/categories"
-        guard let url = URL (string: categoryURL) else { return }
-        let session = URLSession.shared
-        session.dataTask(with: url) { (data, response, error) in
-            guard let data = data else { return }
-            
-            do {
-                let json = try JSONSerialization.jsonObject(with: data, options: [])
-                print (json)
-                self.didUpdateMenu(with: json as! [String])
-            } catch {
-                print (error)
-            }
-        }.resume()
-        
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        button.center = view.center
     }
     
-    func createButton(title: String) -> UIButton {
+    @objc func didTapButton() {
+        let tabBarVC = UITabBarController()
         
-        let button = UIButton()
+        let categoryVC = UINavigationController(rootViewController: CategoriesVC())
+        let searchVC = UINavigationController(rootViewController: SearchVC())
+        let savedVC = UINavigationController(rootViewController: SavedVC())
         
-        button.frame.size = CGSize(width: 100, height: 25)
-        button.setTitle(title, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 25)
-        button.setTitleColor(.black, for: .normal)
+        categoryVC.title = "Categories"
+        searchVC.title = "Search"
+        savedVC.title = "Saved"
         
-        button.translatesAutoresizingMaskIntoConstraints = false
+        tabBarVC.setViewControllers([categoryVC, searchVC, savedVC], animated: false)
         
-        button.heightAnchor.constraint(equalToConstant: 25).isActive = true
+        guard let items = tabBarVC.tabBar.items else {
+            return
+        }
+        let images = ["line.horizontal.3", "magnifyingglass", "bookmark.fill"]
         
-        button.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
-        
-        return button
-    }
-    
-    @objc func buttonAction(sender: UIButton!) {
-        
-        var url = ""
-        
-        if sender.currentTitle! == "random" {
-            url = "https://api.chucknorris.io/jokes/random"
-        } else {
-            url = "https://api.chucknorris.io/jokes/random?category=\(sender.currentTitle!)"
+        for x in 0..<items.count {
+            items[x].image = UIImage(systemName: images[x])
         }
         
-        let vc = ChuckNorrisVC()
+        tabBarVC.modalPresentationStyle = .fullScreen
+        present(tabBarVC, animated: false)
         
-        vc.url = url
-        vc.modalPresentationStyle = .overFullScreen
-        self.present(vc, animated: false)
-        
-    }
-    
-    
-    
-    
-    func didUpdateMenu(with categories: [String]) {
-        DispatchQueue.main.async {
-                        
-            var buttons = [UIButton]()
-            
-            buttons.append(self.createButton(title: "random"))
-            
-            categories.forEach { title in
-                buttons.append(self.createButton(title: title))
-            }
-            
-            buttons.forEach { button in
-                self.stack.addArrangedSubview(button)
-            }
-            
-        }
     }
     
 }
