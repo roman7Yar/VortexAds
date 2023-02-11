@@ -14,7 +14,6 @@
 		C35D5427298A99BA00048ADD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C35D5426298A99BA00048ADD /* Assets.xcassets */; };
 		C35D542A298A99BA00048ADD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C35D5428298A99BA00048ADD /* LaunchScreen.storyboard */; };
 		C35D5432298AA7F200048ADD /* JokeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35D5431298AA7F200048ADD /* JokeManager.swift */; };
-		C35D5434298AB03900048ADD /* JokeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35D5433298AB03900048ADD /* JokeData.swift */; };
 		C35D5438298BF87200048ADD /* ChuckNorrisVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35D5437298BF87200048ADD /* ChuckNorrisVC.swift */; };
 		C3BA158E299117770025B5FF /* CategoriesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BA158D299117760025B5FF /* CategoriesVC.swift */; };
 		C3BA1590299664960025B5FF /* SearchVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BA158F299664960025B5FF /* SearchVC.swift */; };
@@ -32,7 +31,6 @@
 		C35D5429298A99BA00048ADD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C35D542B298A99BA00048ADD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C35D5431298AA7F200048ADD /* JokeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JokeManager.swift; sourceTree = "<group>"; };
-		C35D5433298AB03900048ADD /* JokeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JokeData.swift; sourceTree = "<group>"; };
 		C35D5437298BF87200048ADD /* ChuckNorrisVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChuckNorrisVC.swift; sourceTree = "<group>"; };
 		C3BA158D299117760025B5FF /* CategoriesVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesVC.swift; sourceTree = "<group>"; };
 		C3BA158F299664960025B5FF /* SearchVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchVC.swift; sourceTree = "<group>"; };
@@ -78,7 +76,6 @@
 				C35D5437298BF87200048ADD /* ChuckNorrisVC.swift */,
 				C3BA159329968FCE0025B5FF /* UserDefaultsManager.swift */,
 				C3BA159129968DA00025B5FF /* SavedVC.swift */,
-				C35D5433298AB03900048ADD /* JokeData.swift */,
 				C3BA158F299664960025B5FF /* SearchVC.swift */,
 				C35D5423298A99B600048ADD /* Main.storyboard */,
 				C35D5426298A99BA00048ADD /* Assets.xcassets */,
@@ -164,7 +161,6 @@
 				C35D5422298A99B600048ADD /* ViewController.swift in Sources */,
 				C35D5438298BF87200048ADD /* ChuckNorrisVC.swift in Sources */,
 				C3BA159229968DA00025B5FF /* SavedVC.swift in Sources */,
-				C35D5434298AB03900048ADD /* JokeData.swift in Sources */,
 				C3BA159429968FCE0025B5FF /* UserDefaultsManager.swift in Sources */,
 				C35D541E298A99B600048ADD /* AppDelegate.swift in Sources */,
 				C35D5420298A99B600048ADD /* SceneDelegate.swift in Sources */,

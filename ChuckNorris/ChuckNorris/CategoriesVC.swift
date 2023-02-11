@@ -7,9 +7,8 @@
 
 import UIKit
 
-class CategoriesVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
-        
-   
+class CategoriesVC: UIViewController {
+    
     let tableView = UITableView()
     var categories = ["random"]
     
@@ -20,12 +19,13 @@ class CategoriesVC: UIViewController, UITableViewDelegate, UITableViewDataSource
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
-        
+        tableView.delegate = self
+        tableView.dataSource = self
+
         view.addSubview(tableView)
         view.backgroundColor = .systemBackground
-                
-        getRequest()
         
+        getRequest()
         
     }
     
@@ -33,6 +33,40 @@ class CategoriesVC: UIViewController, UITableViewDelegate, UITableViewDataSource
         super.viewDidLayoutSubviews()
         tableView.frame = view.bounds
     }
+    
+    func getRequest() {
+        
+        let categoryURL = "https://api.chucknorris.io/jokes/categories"
+       
+        guard let url = URL (string: categoryURL) else { return }
+        
+        let session = URLSession.shared
+        
+        session.dataTask(with: url) { (data, response, error) in
+           
+            guard let data = data else { return }
+            
+            do {
+                let json = try JSONSerialization.jsonObject(with: data, options: [])
+                print (json)
+                self.didUpdateMenu(with: json as! [String])
+            } catch {
+                print (error)
+            }
+        }.resume()
+        
+    }
+    
+    func didUpdateMenu(with categories: [String]) {
+        DispatchQueue.main.async {
+            self.categories += categories
+            self.tableView.reloadData()
+        }
+    }
+    
+}
+
+extension CategoriesVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categories.count
@@ -58,46 +92,13 @@ class CategoriesVC: UIViewController, UITableViewDelegate, UITableViewDataSource
         } else {
             url = "https://api.chucknorris.io/jokes/random?category=\(title!)"
         }
-       
+        
         print(url)
         
         let vc = ChuckNorrisVC()
-        
         vc.url = url
-        navigationController?.pushViewController(vc, animated: false)
-    }
-
-    
-    func getRequest() {
-        let categoryURL = "https://api.chucknorris.io/jokes/categories"
-        guard let url = URL (string: categoryURL) else { return }
-        let session = URLSession.shared
-        session.dataTask(with: url) { (data, response, error) in
-            guard let data = data else { return }
-            
-            do {
-                let json = try JSONSerialization.jsonObject(with: data, options: [])
-                print (json)
-                self.didUpdateMenu(with: json as! [String])
-            } catch {
-                print (error)
-            }
-        }.resume()
         
-    }
-    
-    func didUpdateMenu(with categories: [String]) {
-        DispatchQueue.main.async {
-            
-
-            self.categories += categories
-            
-            
-            self.tableView.delegate = self
-            self.tableView.dataSource = self
-            self.tableView.reloadData()
-            
-        }
+        navigationController?.pushViewController(vc, animated: false)
     }
     
 }

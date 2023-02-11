@@ -10,7 +10,23 @@ import UIKit
 class ChuckNorrisVC: UIViewController {
     
     var url = ""
+    
     let edgeSpacing: CGFloat = 12
+    
+    var isSaved = false {
+        didSet {
+            let imageName = isSaved ? "bookmark.fill" : "bookmark"
+            image = UIImage(systemName: imageName)!
+            navigationItem.rightBarButtonItem?.image = image
+        }
+    }
+    
+    var image = UIImage(systemName: "bookmark")!
+    
+    lazy var jokeManager = JokeManager(urlStr: url)
+    
+    var data = Result(categories: [""], created_at: "", id: "", value: "")
+
     
     let jokeLabel: UILabel = {
         let label = UILabel()
@@ -26,6 +42,7 @@ class ChuckNorrisVC: UIViewController {
         
         return label
     }()
+    
     let dateLabel: UILabel = {
         let label = UILabel()
         
@@ -59,17 +76,15 @@ class ChuckNorrisVC: UIViewController {
         return chuckImageView
     }()
     
-    var image = UIImage(systemName: "bookmark")!
-
-    
-    lazy var jokeManager = JokeManager(urlStr: url)
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style: .done, target: self, action: #selector(saveTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: image,
+                                                            style: .done,
+                                                            target: self,
+                                                            action: #selector(saveTapped))
         view?.backgroundColor = .systemBackground
-        
         
         jokeManager.standartCallBack = { (model) -> Void in
             self.didUpdateJoke(with: model)
@@ -89,8 +104,7 @@ class ChuckNorrisVC: UIViewController {
             chuckImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: edgeSpacing),
             chuckImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
-        
-
+    
         jokeLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -117,19 +131,22 @@ class ChuckNorrisVC: UIViewController {
             categoryLabel.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -edgeSpacing)
         ])
 
-
-        
-        
     }
     
    @objc func saveTapped() {
-        print("save tapped")
-       image = UIImage(systemName: "bookmark.fill")!
+       
+       if isSaved {
+           UserDefaultsManager.shared.removeFromData(data: data)
+       } else {
+           UserDefaultsManager.shared.setData(dataToSave: data)
+       }
+      
+       isSaved.toggle()
        navigationItem.rightBarButtonItem?.image = image
-    }
+
+   }
     
-    func didUpdateJoke(with model: StandartJokeModel) {
-    
+    func didUpdateJoke(with model: Result) {
         DispatchQueue.main.async {
             self.jokeLabel.text = model.value
             self.dateLabel.text = String(model.created_at.prefix(10))
@@ -140,35 +157,26 @@ class ChuckNorrisVC: UIViewController {
                     return "category: \(model.categories[0])"
                 }
             }()
-            // TODO: date | categories
+            self.data = model
+            
+            let dataToCheck = UserDefaultsManager.shared.getData()!
+            
+            self.isSaved = false
+
+            dataToCheck.forEach { item in
+                if item.id == self.data.id {
+                    self.isSaved = true
+                }
+            }
+            self.navigationItem.rightBarButtonItem?.image = self.image
         }
     }
 
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
         jokeLabel.text = ""
         jokeManager.fetch(type: .standart)
     }
     
 }
 
-//extension ChuckNorrisVC: JokeManagerDelegate {
-//
-//    func didUpdateJokeWithSearch(with joke: JokeModel) {
-//        //
-//    }
-//
-//
-//    func didUpdateJoke(with joke: String) {
-//
-//        DispatchQueue.main.async {
-//            self.jokeLabel.text = joke
-//        }
-//    }
-//
-//    func didFailWithError(error: Error) {
-//        print(error)
-//    }
-//
-//}

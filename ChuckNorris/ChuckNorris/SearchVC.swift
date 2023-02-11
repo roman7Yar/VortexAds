@@ -9,7 +9,6 @@ import UIKit
 
 class SearchVC: UIViewController {
     
-    
     let tableView = UITableView()
     var arrOfJokes = [Result]()
     var numberOfRows = 0
@@ -23,20 +22,21 @@ class SearchVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = "Search joke"
         
         jokeManager.searchCallBack = { (model) -> Void in
             self.didUpdateJokeWithSearch(with: model)
         }
         
-        
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-
         
-        title = "Search joke"
+        tableView.delegate = self
+        tableView.dataSource = self
+        
         view.addSubview(tableView)
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
-//        tableView.widthAnchor.constraint(equalToConstant: view.widthAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
@@ -47,16 +47,10 @@ class SearchVC: UIViewController {
         searchController.searchBar.delegate = self
     }
     
-    
-    func didUpdateJokeWithSearch(with model: JokeModel) {
+    func didUpdateJokeWithSearch(with model: JokeData) {
         DispatchQueue.main.async {
-            
             self.numberOfRows = model.total
             self.arrOfJokes = model.result
-
-            self.tableView.delegate = self // TODO: Try to move this to didLoad
-            self.tableView.dataSource = self
-            
             self.tableView.reloadData()
         }
 
@@ -70,6 +64,7 @@ extension SearchVC: UISearchBarDelegate {
         guard let text = searchBar.text, !text.isEmpty else {
             return
         }
+        
         var query = ""
         
         text.forEach { char in
@@ -80,7 +75,6 @@ extension SearchVC: UISearchBarDelegate {
             }
         }
         
-       
         url = "https://api.chucknorris.io/jokes/search?query=\(query)"
         
         jokeManager.urlStr = url
@@ -88,11 +82,6 @@ extension SearchVC: UISearchBarDelegate {
         
     }
     
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        
-
-    }
-
 }
 
 extension SearchVC: UITableViewDelegate, UITableViewDataSource {
@@ -130,10 +119,7 @@ extension SearchVC: UITableViewDelegate, UITableViewDataSource {
         let id = arrOfJokes[indexPath.row].id
        
         let url = "https://api.chucknorris.io/jokes/\(id)"
-        
-       
-        print(url)
-        
+                
         let vc = ChuckNorrisVC()
         
         vc.url = url
