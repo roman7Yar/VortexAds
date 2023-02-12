@@ -65,7 +65,7 @@ extension SavedVC: UITableViewDelegate, UITableViewDataSource {
         var cell = tableView.dequeueReusableCell(withIdentifier: "cell") // TODO: fix showing categories
        
         if cell == nil {
-            cell = UITableViewCell(style: .value1, reuseIdentifier: "cell")
+            cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell")
         }
         
         let value = arrOfJokes[indexPath.row].value
