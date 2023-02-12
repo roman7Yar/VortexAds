@@ -24,9 +24,12 @@ class CategoriesVC: UIViewController {
 
         view.addSubview(tableView)
         view.backgroundColor = .systemBackground
-        
+                
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         getRequest()
-        
     }
     
     override func viewDidLayoutSubviews() {

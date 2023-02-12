@@ -8,28 +8,15 @@
 import UIKit
 
 class ViewController: UIViewController {
-    
-    private let button: UIButton = {
-        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 52))
-        button.setTitle("Log in", for: .normal)
-        button.backgroundColor = .systemBackground
-        button.setTitleColor(.label, for: .normal)
-        return button
-    }() // TODO: replace with Category and Random
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBlue
-        view.addSubview(button)
-        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
+        view.backgroundColor = .systemBackground
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        button.center = view.center
-    }
-    
-    @objc func didTapButton() {
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
         let tabBarVC = UITabBarController()
         
         let categoryVC = UINavigationController(rootViewController: CategoriesVC())
