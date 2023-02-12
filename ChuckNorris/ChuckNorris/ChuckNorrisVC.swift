@@ -11,9 +11,11 @@ class ChuckNorrisVC: UIViewController {
     
     var url = ""
     
-    let edgeSpacing: CGFloat = 12
+    var bool = false
     
-    var isSaved = false {
+    private let edgeSpacing: CGFloat = 12
+    
+    private var isSaved = false {
         didSet {
             let imageName = isSaved ? "bookmark.fill" : "bookmark"
             image = UIImage(systemName: imageName)!
@@ -21,16 +23,16 @@ class ChuckNorrisVC: UIViewController {
         }
     }
     
-    var image = UIImage(systemName: "bookmark")!
+    private var image = UIImage(systemName: "bookmark")!
     
-    lazy var jokeManager = JokeManager(urlStr: url)
+    private lazy var jokeManager = JokeManager(urlStr: url)
     
     var data = Result(categories: [""], created_at: "", id: "", value: "")
-
     
-    let jokeLabel: UILabel = {
+    
+    private let jokeLabel: UILabel = {
         let label = UILabel()
-       
+        
         label.text = "wait for download"
         
         label.numberOfLines = 0
@@ -43,11 +45,11 @@ class ChuckNorrisVC: UIViewController {
         return label
     }()
     
-    let dateLabel: UILabel = {
+    private let dateLabel: UILabel = {
         let label = UILabel()
         
         label.frame.size = CGSize(width: 100, height: 20)
-
+        
         label.text = "date: "
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 16)
@@ -56,11 +58,11 @@ class ChuckNorrisVC: UIViewController {
         return label
     }()
     
-    let categoryLabel: UILabel = {
+    private let categoryLabel: UILabel = {
         let label = UILabel()
         
         label.frame.size = CGSize(width: 100, height: 20)
-       
+        
         label.text = "category: none"
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 16)
@@ -70,7 +72,7 @@ class ChuckNorrisVC: UIViewController {
     }()
     
     
-    let chuckImage: UIImageView = {
+    private let chuckImage: UIImageView = {
         let image = UIImage(named: "chuck")
         let chuckImageView = UIImageView(image: image!)
         return chuckImageView
@@ -79,32 +81,35 @@ class ChuckNorrisVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: image,
                                                             style: .done,
                                                             target: self,
                                                             action: #selector(saveTapped))
         view?.backgroundColor = .systemBackground
-        
-        jokeManager.standartCallBack = { (model) -> Void in
-            self.didUpdateJoke(with: model)
+        if bool {
+            getSavedJoke()
+        } else {
+            jokeManager.standartCallBack = { (model) -> Void in
+                self.didUpdateJoke(with: model)
+            }
+            jokeManager.fetch(type: .standart)
         }
-
-        jokeManager.fetch(type: .standart)
+    
         
         view.addSubview(chuckImage)
         view.addSubview(jokeLabel)
         view.addSubview(dateLabel)
         view.addSubview(categoryLabel)
-
-                
+        
+        
         chuckImage.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             chuckImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: edgeSpacing),
             chuckImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
-    
+        
         jokeLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -130,39 +135,49 @@ class ChuckNorrisVC: UIViewController {
             categoryLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -edgeSpacing),
             categoryLabel.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -edgeSpacing)
         ])
+        
+    }
+    
+    @objc func saveTapped() {
+        
+        if isSaved {
+            UserDefaultsManager.shared.removeFromData(data: data)
+        } else {
+            UserDefaultsManager.shared.setData(dataToSave: data)
+        }
+        
+        isSaved.toggle()
+        navigationItem.rightBarButtonItem?.image = image
+        
+    }
+    
+    func getSavedJoke() {
+        updateVC(model: data)
+    }
+    
+    func updateVC(model: Result) {
+        jokeLabel.text = model.value
+        dateLabel.text = String(model.created_at.prefix(10))
+        categoryLabel.text = {
+            if model.categories.isEmpty {
+                return "category: none"
+            } else {
+                return "category: \(model.categories[0])"
+            }
+        }()
 
     }
     
-   @objc func saveTapped() {
-       
-       if isSaved {
-           UserDefaultsManager.shared.removeFromData(data: data)
-       } else {
-           UserDefaultsManager.shared.setData(dataToSave: data)
-       }
-      
-       isSaved.toggle()
-       navigationItem.rightBarButtonItem?.image = image
-
-   }
-    
     func didUpdateJoke(with model: Result) {
         DispatchQueue.main.async {
-            self.jokeLabel.text = model.value
-            self.dateLabel.text = String(model.created_at.prefix(10))
-            self.categoryLabel.text = {
-                if model.categories.isEmpty {
-                    return "category: none"
-                } else {
-                    return "category: \(model.categories[0])"
-                }
-            }()
+            self.updateVC(model: model)
+            
             self.data = model
             
             let dataToCheck = UserDefaultsManager.shared.getData()!
             
             self.isSaved = false
-
+            
             dataToCheck.forEach { item in
                 if item.id == self.data.id {
                     self.isSaved = true
@@ -171,7 +186,7 @@ class ChuckNorrisVC: UIViewController {
             self.navigationItem.rightBarButtonItem?.image = self.image
         }
     }
-
+    
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         jokeLabel.text = ""

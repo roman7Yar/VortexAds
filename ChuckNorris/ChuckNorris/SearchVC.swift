@@ -13,7 +13,7 @@ class SearchVC: UIViewController {
     var arrOfJokes = [Result]()
     var numberOfRows = 0
 
-    var url = "https://api.chucknorris.io/jokes/search?query=\(1)"
+    var url = "https://api.chucknorris.io/jokes/search?query="
     
     let searchController = UISearchController()
     

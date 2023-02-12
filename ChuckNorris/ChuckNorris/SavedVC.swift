@@ -89,13 +89,12 @@ extension SavedVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let id = arrOfJokes[indexPath.row].id
+        let data = arrOfJokes[indexPath.row]
         
-        let url = "https://api.chucknorris.io/jokes/\(id)"
                 
         let vc = ChuckNorrisVC()
-        
-        vc.url = url
+        vc.data = data
+        vc.bool = true
         navigationController?.pushViewController(vc, animated: false)
     }
     
