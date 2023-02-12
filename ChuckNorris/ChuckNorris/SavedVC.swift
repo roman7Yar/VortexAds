@@ -23,8 +23,6 @@ class SavedVC: UIViewController {
         
         view.backgroundColor = .systemBackground
         
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-
         view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -39,7 +37,6 @@ class SavedVC: UIViewController {
         getSavedData()
         
         tableView.reloadData()
-        
     }
     
     @objc func reloadTapped() {
@@ -64,25 +61,30 @@ extension SavedVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
         var cell = tableView.dequeueReusableCell(withIdentifier: "cell") // TODO: fix showing categories
+       
         if cell == nil {
             cell = UITableViewCell(style: .value1, reuseIdentifier: "cell")
         }
         
         let value = arrOfJokes[indexPath.row].value
         let categories = arrOfJokes[indexPath.row].categories
+       
         cell?.textLabel?.text = value
-        if !categories.isEmpty {
-            //            var category = ""
-            //            categories.forEach { str in
-            //                category += str + ", "
-            //            }
-            //            category.removeLast(2)
-            cell?.detailTextLabel?.text = categories[0]
-        }
         
+        if !categories.isEmpty {
+            var category = ""
+            
+            categories.forEach { str in
+                category += str + ", "
+            }
+            category.removeLast(2) // removing ", "
+
+            cell?.detailTextLabel?.text = "category: \(category)"
+        } else {
+            cell?.detailTextLabel?.text = "category: none"
+        }
         return cell!
     }
     
@@ -90,7 +92,6 @@ extension SavedVC: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let data = arrOfJokes[indexPath.row]
-        
                 
         let vc = ChuckNorrisVC()
         vc.data = data

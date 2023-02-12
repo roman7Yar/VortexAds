@@ -28,7 +28,7 @@ class SearchVC: UIViewController {
             self.didUpdateJokeWithSearch(with: model)
         }
         
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+//        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -91,25 +91,33 @@ extension SearchVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-  
+        
         var cell = tableView.dequeueReusableCell(withIdentifier: "cell") // TODO: fix showing categories
+       
         if cell == nil {
-            cell = UITableViewCell(style: .value1, reuseIdentifier: "cell")
+            cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell")
         }
                 
         let value = arrOfJokes[indexPath.row].value
         let categories = arrOfJokes[indexPath.row].categories
+       
+        cell?.detailTextLabel?.isEnabled = true
         cell?.textLabel?.text = value
-        if !categories.isEmpty {
-//            var category = ""
-//            categories.forEach { str in
-//                category += str + ", "
-//            }
-//            category.removeLast(2)
-            cell?.detailTextLabel?.text = categories[0]
-        }
         
+        if !categories.isEmpty {
+            var category = ""
+            
+            categories.forEach { str in
+                category += str + ", "
+            }
+            
+            category.removeLast(2) // removing ", "
+
+            cell?.detailTextLabel?.text = "category: \(category)"
+        } else {
+            cell?.detailTextLabel?.text = "category: none"
+        }
+                
         return cell!
     }
     
