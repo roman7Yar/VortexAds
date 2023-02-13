@@ -11,8 +11,10 @@ class ChuckNorrisVC: UIViewController {
     
     var url = ""
     
-    var bool = false
-    
+    var isAbleRefreshingJoke = false
+   
+    var data = Result(categories: [""], created_at: "", id: "", value: "")
+
     private let edgeSpacing: CGFloat = 12
     
     private var isSaved = false {
@@ -26,20 +28,15 @@ class ChuckNorrisVC: UIViewController {
     private var image = UIImage(systemName: "bookmark")!
     
     private lazy var jokeManager = JokeManager(urlStr: url)
-    
-    var data = Result(categories: [""], created_at: "", id: "", value: "")
-    
-    
+        
     private let jokeLabel: UILabel = {
         let label = UILabel()
         
         label.text = "wait for download"
-        
         label.numberOfLines = 0
         label.textAlignment = .natural
-        label.font = .systemFont(ofSize: 28)
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.5
+        label.font = .preferredFont(forTextStyle: .title2)
+        label.adjustsFontForContentSizeCategory = true
         label.textColor = .label
         
         return label
@@ -47,12 +44,14 @@ class ChuckNorrisVC: UIViewController {
     
     private let dateLabel: UILabel = {
         let label = UILabel()
-        
-        label.frame.size = CGSize(width: 100, height: 20)
-        
+                
         label.text = "date: "
         label.textAlignment = .left
-        label.font = .systemFont(ofSize: 16)
+        label.font = .preferredFont(forTextStyle: .body)
+        label.adjustsFontForContentSizeCategory = true
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.5
+
         label.textColor = .secondaryLabel
         
         return label
@@ -61,11 +60,12 @@ class ChuckNorrisVC: UIViewController {
     private let categoryLabel: UILabel = {
         let label = UILabel()
         
-        label.frame.size = CGSize(width: 100, height: 20)
-        
         label.text = "category: none"
-        label.textAlignment = .left
-        label.font = .systemFont(ofSize: 16)
+        label.textAlignment = .right
+        label.font = .preferredFont(forTextStyle: .body)
+        label.adjustsFontForContentSizeCategory = true
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.2
         label.textColor = .secondaryLabel
         
         return label
@@ -78,64 +78,84 @@ class ChuckNorrisVC: UIViewController {
         return chuckImageView
     }()
     
+    private let mainStackView: UIStackView = {
+        let stackView = UIStackView()
+        
+        stackView.axis = NSLayoutConstraint.Axis.vertical
+        stackView.distribution = UIStackView.Distribution.fill
+        stackView.alignment = .fill
+        stackView.spacing = 12
+
+        
+        return stackView
+    }()
+    private let smallStackView: UIStackView = {
+        let stackView = UIStackView()
+        
+        stackView.axis = NSLayoutConstraint.Axis.horizontal
+        stackView.distribution = UIStackView.Distribution.fillEqually
+        stackView.alignment = .fill
+        stackView.spacing = 32
+        
+        return stackView
+    }()
+   
+    let scrollView = UIScrollView()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        
+        view.backgroundColor = .systemBackground
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: image,
                                                             style: .done,
                                                             target: self,
                                                             action: #selector(saveTapped))
-        view?.backgroundColor = .systemBackground
-        if bool {
+        if isAbleRefreshingJoke {
             getSavedJoke()
         } else {
             jokeManager.standartCallBack = { (model) -> Void in
                 self.didUpdateJoke(with: model)
             }
             jokeManager.fetch(type: .standart)
+            let tapGesture = UITapGestureRecognizer()
+            tapGesture.addTarget(self, action: #selector(buttonTapped))
+            view.addGestureRecognizer(tapGesture)
         }
-    
+
+        view.addSubview(scrollView)
+        scrollView.addSubview(mainStackView)
         
-        view.addSubview(chuckImage)
-        view.addSubview(jokeLabel)
-        view.addSubview(dateLabel)
-        view.addSubview(categoryLabel)
+        smallStackView.addArrangedSubview(dateLabel)
+        smallStackView.addArrangedSubview(categoryLabel)
         
+        mainStackView.addArrangedSubview(chuckImage)
+        mainStackView.addArrangedSubview(jokeLabel)
+        mainStackView.addArrangedSubview(smallStackView)
         
-        chuckImage.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.backgroundColor = .systemBackground
         
-        NSLayoutConstraint.activate([
-            chuckImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: edgeSpacing),
-            chuckImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-        ])
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
         
-        jokeLabel.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: edgeSpacing).isActive = true
+        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -edgeSpacing).isActive = true
+        scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+
+        mainStackView.translatesAutoresizingMaskIntoConstraints = false
         
-        NSLayoutConstraint.activate([
-            jokeLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            jokeLabel.topAnchor.constraint(equalTo: chuckImage.bottomAnchor, constant: 16),
-            jokeLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: edgeSpacing),
-            jokeLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -edgeSpacing),
-            jokeLabel.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
+        mainStackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
+        mainStackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
+        mainStackView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
+        mainStackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
         
-        dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            dateLabel.topAnchor.constraint(equalTo: jokeLabel.bottomAnchor, constant: 16),
-            dateLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: edgeSpacing),
-            dateLabel.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -edgeSpacing)
-        ])
-        
-        categoryLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            categoryLabel.topAnchor.constraint(equalTo: jokeLabel.bottomAnchor, constant: 16),
-            categoryLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -edgeSpacing),
-            categoryLabel.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -edgeSpacing)
-        ])
-        
+        // important to scroll
+        mainStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
+
+        scrollView.isUserInteractionEnabled = true
     }
     
     @objc func saveTapped() {
@@ -145,10 +165,14 @@ class ChuckNorrisVC: UIViewController {
         } else {
             UserDefaultsManager.shared.setData(dataToSave: data)
         }
-        
         isSaved.toggle()
-        navigationItem.rightBarButtonItem?.image = image
         
+        navigationItem.rightBarButtonItem?.image = image
+    }
+    
+    @objc func buttonTapped() {
+        jokeLabel.text = ""
+        jokeManager.fetch(type: .standart)
     }
     
     func getSavedJoke() {
@@ -156,8 +180,10 @@ class ChuckNorrisVC: UIViewController {
     }
     
     func updateVC(model: Result) {
+       
         jokeLabel.text = model.value
         dateLabel.text = String(model.created_at.prefix(10))
+      
         categoryLabel.text = {
             if model.categories.isEmpty {
                 return "category: none"
@@ -165,32 +191,35 @@ class ChuckNorrisVC: UIViewController {
                 return "category: \(model.categories[0])"
             }
         }()
-
+        
+        checkIfJokeIsSaved(model: model)
     }
     
     func didUpdateJoke(with model: Result) {
         DispatchQueue.main.async {
             self.updateVC(model: model)
-            
-            self.data = model
-            
-            let dataToCheck = UserDefaultsManager.shared.getData()!
-            
-            self.isSaved = false
-            
-            dataToCheck.forEach { item in
-                if item.id == self.data.id {
-                    self.isSaved = true
-                }
-            }
-            self.navigationItem.rightBarButtonItem?.image = self.image
         }
+    }
+    
+    func checkIfJokeIsSaved(model: Result) {
+        let dataToCheck = UserDefaultsManager.shared.getData()!
+        
+        self.isSaved = false
+        
+        dataToCheck.forEach { item in
+            if item.id == model.id {
+                self.isSaved = true
+            }
+        }
+        self.navigationItem.rightBarButtonItem?.image = self.image
     }
     
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        jokeLabel.text = ""
-        jokeManager.fetch(type: .standart)
+        if !isAbleRefreshingJoke {
+            jokeLabel.text = ""
+            jokeManager.fetch(type: .standart)
+        }
     }
     
 }

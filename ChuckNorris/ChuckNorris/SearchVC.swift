@@ -12,6 +12,9 @@ class SearchVC: UIViewController {
     let tableView = UITableView()
     var arrOfJokes = [Result]()
     var numberOfRows = 0
+    
+    private var timer: Timer? // used for search delay
+
 
     var url = "https://api.chucknorris.io/jokes/search?query="
     
@@ -27,9 +30,7 @@ class SearchVC: UIViewController {
         jokeManager.searchCallBack = { (model) -> Void in
             self.didUpdateJokeWithSearch(with: model)
         }
-        
-//        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        
+                
         tableView.delegate = self
         tableView.dataSource = self
         
@@ -59,26 +60,28 @@ class SearchVC: UIViewController {
 }
 
 extension SearchVC: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-      
-        guard let text = searchBar.text, !text.isEmpty else {
-            return
-        }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         
         var query = ""
         
-        text.forEach { char in
+        searchText.forEach { char in
             if char == " " {
                 query.append("_")
             } else {
                 query.append(char)
             }
         }
-        
+
         url = "https://api.chucknorris.io/jokes/search?query=\(query)"
+
+        // timer is needed to get some delay in search while typing (not to send 5 request after typing 5 letters word)
+        timer?.invalidate()
         
-        jokeManager.urlStr = url
-        jokeManager.fetch(type: .search)
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { (_) in
+            self.jokeManager.urlStr = self.url
+            self.jokeManager.fetch(type: .search)
+        })
         
     }
     
@@ -124,13 +127,11 @@ extension SearchVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
        
-        let id = arrOfJokes[indexPath.row].id
-       
-        let url = "https://api.chucknorris.io/jokes/\(id)"
+        let data = arrOfJokes[indexPath.row]
                 
         let vc = ChuckNorrisVC()
-        
-        vc.url = url
+        vc.data = data
+        vc.isAbleRefreshingJoke = true
         navigationController?.pushViewController(vc, animated: false)
     }
 }

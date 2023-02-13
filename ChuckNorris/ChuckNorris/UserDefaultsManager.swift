@@ -110,7 +110,7 @@ class UserDefaultsManager {
 
             let data = try encoder.encode(savedData)
 
-            UserDefaults.standard.set(data, forKey: "notes")
+            UserDefaults.standard.set(data, forKey: dataKey)
         } catch {
             print("Unable to Encode Array of Notes (\(error))")
         }

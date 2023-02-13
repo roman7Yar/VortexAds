@@ -9,7 +9,6 @@ import UIKit
 
 class SavedVC: UIViewController {
     
-    let image = UIImage(systemName: "arrow.triangle.2.circlepath")
     let tableView = UITableView()
     var arrOfJokes = [Result]()
     var numberOfRows = 0
@@ -18,9 +17,7 @@ class SavedVC: UIViewController {
         super.viewDidLoad()
         
         title = "Saved"
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style: .done, target: self, action: #selector(reloadTapped))
-        
+                
         view.backgroundColor = .systemBackground
         
         view.addSubview(tableView)
@@ -33,23 +30,21 @@ class SavedVC: UIViewController {
         
         tableView.delegate = self 
         tableView.dataSource = self
-
-        getSavedData()
-        
-        tableView.reloadData()
     }
     
-    @objc func reloadTapped() {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         getSavedData()
-        tableView.reloadData()
     }
-  
+      
     func getSavedData() {
-        
+
         let data = UserDefaultsManager.shared.getData()!
        
         arrOfJokes = data
         numberOfRows = data.count
+        
+        tableView.reloadData()
     }
     
 }
@@ -62,7 +57,7 @@ extension SavedVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        var cell = tableView.dequeueReusableCell(withIdentifier: "cell") // TODO: fix showing categories
+        var cell = tableView.dequeueReusableCell(withIdentifier: "cell")
        
         if cell == nil {
             cell = UITableViewCell(style: .subtitle, reuseIdentifier: "cell")
@@ -95,7 +90,7 @@ extension SavedVC: UITableViewDelegate, UITableViewDataSource {
                 
         let vc = ChuckNorrisVC()
         vc.data = data
-        vc.bool = true
+        vc.isAbleRefreshingJoke = true
         navigationController?.pushViewController(vc, animated: false)
     }
     

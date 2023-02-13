@@ -41,7 +41,7 @@ class CategoriesVC: UIViewController {
         
         let categoryURL = "https://api.chucknorris.io/jokes/categories"
        
-        guard let url = URL (string: categoryURL) else { return }
+        guard let url = URL(string: categoryURL) else { return }
         
         let session = URLSession.shared
         
@@ -103,6 +103,5 @@ extension CategoriesVC: UITableViewDelegate, UITableViewDataSource {
         
         navigationController?.pushViewController(vc, animated: false)
     }
-    
 }
 
