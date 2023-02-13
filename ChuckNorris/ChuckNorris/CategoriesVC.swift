@@ -62,6 +62,7 @@ class CategoriesVC: UIViewController {
     
     func didUpdateMenu(with categories: [String]) {
         DispatchQueue.main.async {
+            self.categories = ["random"]
             self.categories += categories
             self.tableView.reloadData()
         }
@@ -95,9 +96,7 @@ extension CategoriesVC: UITableViewDelegate, UITableViewDataSource {
         } else {
             url = "https://api.chucknorris.io/jokes/random?category=\(title!)"
         }
-        
-        print(url)
-        
+                
         let vc = ChuckNorrisVC()
         vc.url = url
         

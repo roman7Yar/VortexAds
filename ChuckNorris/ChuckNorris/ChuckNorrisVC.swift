@@ -119,6 +119,7 @@ class ChuckNorrisVC: UIViewController {
         } else {
             jokeManager.standartCallBack = { (model) -> Void in
                 self.didUpdateJoke(with: model)
+                self.data = model
             }
             jokeManager.fetch(type: .standart)
             let tapGesture = UITapGestureRecognizer()
@@ -154,8 +155,6 @@ class ChuckNorrisVC: UIViewController {
         
         // important to scroll
         mainStackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
-
-        scrollView.isUserInteractionEnabled = true
     }
     
     @objc func saveTapped() {
@@ -212,14 +211,6 @@ class ChuckNorrisVC: UIViewController {
             }
         }
         self.navigationItem.rightBarButtonItem?.image = self.image
-    }
-    
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if !isAbleRefreshingJoke {
-            jokeLabel.text = ""
-            jokeManager.fetch(type: .standart)
-        }
     }
     
 }
